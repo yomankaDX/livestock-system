@@ -22,51 +22,122 @@ class _PageState extends State<LoginPage> {
   final _emailcontroller = TextEditingController();
   final _passwordcontroller = TextEditingController();
 
-  void Passwrong() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return const AlertDialog(title: Center(child: Text((" incorrect"))));
-        });
+  String _emailError = '';
+  String _passwordError = '';
+
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _emailFocus.addListener(_validateEmail);
+    _passwordFocus.addListener(_validatePassword);
   }
 
-  void Emailrong() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return const AlertDialog(
-              title: Center(child: Text(("  Emailrong incorrect"))));
-        });
-  }
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  Future<void> signInWithEmailAndPassword() async {
-    try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: _emailcontroller.text.trim(),
-        password: _passwordcontroller.text.trim(),
-      );
-
-      // Handle successful sign-in
-      // Navigate to the homepage
-      if (userCredential.user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MyHomePage()),
-        );
-      }
-    } catch (e) {
-      // Handle sign-in error
-      print("Sign-in error: $e");
+  void _validateEmail() {
+    if (!_emailFocus.hasFocus) {
+      _validateField(_emailcontroller.text, 'email');
     }
   }
 
-  dispose() {
-    _emailcontroller.dispose();
-    _passwordcontroller.dispose();
-    super.dispose();
+  void _validatePassword() {
+    if (!_passwordFocus.hasFocus) {
+      _validateField(_passwordcontroller.text, 'password');
+    }
   }
+void _loginPressed() {
+  // Clear previous error messages
+  setState(() {
+    _emailError = '';
+    _passwordError = '';
+  });
+
+  // Perform the login logic here
+  String email = _emailcontroller.text.trim();
+  String password = _passwordcontroller.text;
+
+  // Validate the fields again before logging in
+  bool emailValid = _validateField(email, 'email');
+  bool passwordValid = _validateField(password, 'password');
+
+  // Check if both email and password are valid
+  if (emailValid && passwordValid) {
+    // Perform the login using Firebase Authentication or any other login logic
+    _performLogin(email, password);
+  }
+}
+
+bool _validateField(String value, String fieldName) {
+  bool isValid = true;
+
+  if (fieldName == 'email') {
+    if (value.isEmpty) {
+      setState(() {
+        _emailError = 'Please enter your email';
+      });
+      isValid = false;
+    }
+  } else if (fieldName == 'password') {
+    if (value.isEmpty) {
+      setState(() {
+        _passwordError = 'Please enter your password';
+      });
+      isValid = false;
+    }
+  }
+
+  return isValid;
+}
+
+  void _performLogin(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+  Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MyHomePage()),
+        );
+
+      // Login successful, you can navigate to the home screen or perform other actions.
+      print('Login successful: ${userCredential.user?.email}');
+    } catch (e) {
+      // Handle login errors (e.g., wrong credentials, network issues).
+      if (e is FirebaseAuthException) {
+        if (e.code == 'user-not-found') {
+          setState(() {
+            _emailError = 'No user found with this email';
+          });
+        } else if (e.code == 'wrong-password') {
+          setState(() {
+            _passwordError = 'Incorrect password';
+          });
+        } else {
+          // Other FirebaseAuthException errors can be handled here
+          print('Error: ${e.message}');
+        }
+      } else {
+        // Handle other exceptions that may occur during the login process
+        print('Error: $e');
+      }
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,63 +181,67 @@ class _PageState extends State<LoginPage> {
                     SizedBox(
                       height: 30,
                     ),
-                    Container(
-                      decoration: BoxDecoration(boxShadow: [
-                        BoxShadow(
-                            blurRadius: 8,
-                            offset: Offset(
-                              1,
-                              1,
-                            ),
-                            color: Colors.white10),
-                      ]),
-                      child: Container(
-                          child: Mytextfield(
+
+                    // Container(
+                    //   decoration: BoxDecoration(boxShadow: [
+                    //     BoxShadow(
+                    //         blurRadius: 8,
+                    //         offset: Offset(
+                    //           1,
+                    //           1,
+                    //         ),
+                    //         color: Colors.white10),
+                    //   ]),
+                    //   child: Container(
+                    //       child: Mytextfield(
+                    //         //  focusNode: _emailFocus,
+                    //     controller: _emailcontroller,
+                    //     hinttext: "email",
+                    //     obsecure: false,
+                    //   )
+
+                    //       ),
+                    // ),
+                     Container(
+                      child: TextFormField(
+       focusNode: _emailFocus,
+
+                        
+                   
                         controller: _emailcontroller,
-                        hinttext: "email",
-                        obsecure: false,
-                      )
+                        decoration: InputDecoration(
+                            errorText: _emailError.isNotEmpty ? _emailError : null,
 
-                          // TextFormField(
-                          //   controller: _emailcontroller,
-                          //   decoration: InputDecoration(
-                          //       enabledBorder: OutlineInputBorder(
-                          //         borderRadius: BorderRadius.circular(40),
-                          //         borderSide: BorderSide(color: Colors.white),
-                          //       ),
-                          //       focusedBorder: OutlineInputBorder(
-                          //         borderSide:
-                          //             BorderSide(color: Colors.grey.shade400),
-                          //         borderRadius: BorderRadius.circular(40),
-                          //       ),
-                          //       fillColor: Colors.white,
-                          //       filled: true,
-                          //       hintText: ('UserName '),
-                          //       label: Text('Enter your Username'),
-                          //       hintStyle: TextStyle(color: Colors.grey[500])),
+                            enabledBorder: OutlineInputBorder(
+                              
+                              borderRadius: BorderRadius.circular(40),
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white),
+                            ),
+                            fillColor: Colors.white,
+                            filled: true,
+                            hintText: ('Email * '),
+                         labelText: 'Email',
+                            hintStyle: TextStyle(color: Colors.grey[500])),
 
-                          //   ThemeHelper().textInputDecoration(
-                          //       'UserName', 'Enter your first name'),
-                          //   keyboardType: TextInputType.emailAddress,
-                          //   validator: (val) {
-                          //     if (!(val!.isEmpty) &&
-                          //         !RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-                          //             .hasMatch(val)) {
-                          //       return "Enter a valid email address";
-                          //     }
-                          //     return null;
-                          //   },
-                          // ),
-                          ),
+                     
+                      ),
                     ),
                     SizedBox(
                       height: 14,
                     ),
                     Container(
                       child: TextFormField(
+
+                               focusNode: _passwordFocus ,
+                        
                         obscureText: true,
                         controller: _passwordcontroller,
                         decoration: InputDecoration(
+                       labelText: 'Password', // Use either labelText or label, not both.
+    errorText: _passwordError.isNotEmpty ? _passwordError : null,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(40),
                               borderSide: BorderSide(color: Colors.white),
@@ -177,35 +252,14 @@ class _PageState extends State<LoginPage> {
                             fillColor: Colors.white,
                             filled: true,
                             hintText: ('password * '),
-                            label: Text('Enter your password'),
+                        
                             hintStyle: TextStyle(color: Colors.grey[500])),
 
-                        //   ThemeHelper().textInputDecoration(
-                        //       'UserName', 'Enter your first name'),
-                        //   keyboardType: TextInputType.emailAddress,
-                        //   validator: (val) {
-                        //     if (!(val!.isEmpty) &&
-                        //         !RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
-                        //             .hasMatch(val)) {
-                        //       return "Enter a valid email address";
-                        //     }
-                        //     return null;
-                        //   },
+                     
                       ),
                     ),
 
-                    // child: TextFormField(
-                    //   controller: _passwordcontroller,
-                    //   obscureText: true,
-                    //   decoration: ThemeHelper().textInputDecoration(
-                    //       "PassWord*", "Enter your password"),
-                    //   validator: (val) {
-                    //     if (val!.isEmpty) {
-                    //       return "Please enter your password";
-                    //     }
-                    //     return null;
-
-                    // decoration: ThemeHelper().inputBoxDecorationShaddow(),
+                   
 
                     SizedBox(
                       height: 10,
@@ -234,7 +288,7 @@ class _PageState extends State<LoginPage> {
                     Center(
                       child: Container(
                         child: GestureDetector(
-                          onTap: signInWithEmailAndPassword,
+                          onTap:  _loginPressed,
                           child: Container(
                             padding: const EdgeInsets.all(20),
                             margin: const EdgeInsets.only(left: 50, right: 50),

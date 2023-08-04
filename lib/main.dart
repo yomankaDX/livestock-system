@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:live_stock_tracking/page/page.dart';
 
 
@@ -30,3 +31,27 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+
+//  Future<void> _initializeNotifications() async {
+//     const AndroidInitializationSettings initializationSettingsAndroid =
+//         AndroidInitializationSettings('app_icon');
+//     final IOSInitializationSettings initializationSettingsIOS =
+//         IOSInitializationSettings();
+//     final MacOSInitializationSettings initializationSettingsMacOS =
+//         MacOSInitializationSettings();
+//     final InitializationSettings initializationSettings = InitializationSettings(
+//       android: initializationSettingsAndroid,
+//       iOS: initializationSettingsIOS,
+//       macOS: initializationSettingsMacOS,
+//     );
+//     await flutterLocalNotificationsPlugin.initialize(
+//       initializationSettings,
+//       onSelectNotification: (String? payload) async {
+//         // Handle when a notification is tapped.
+//       },
+//     );
+//   }
+
+  
