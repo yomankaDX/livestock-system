@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "487460222471",
+    "firebase_url": "https://live-stock-f3138-default-rtdb.firebaseio.com",
+    "project_id": "live-stock-f3138",
+    "storage_bucket": "live-stock-f3138.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:487460222471:android:fc66ecba3e63e8b6851ca2",
+        "android_client_info": {
+          "package_name": "com.example.livestock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "487460222471-l4lrtd70c1o776elfg65tb5a05su8inl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDODj7bOUJo9RooA-FAGsJc78qmg2mgtw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "487460222471-l4lrtd70c1o776elfg65tb5a05su8inl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "487460222471-rd67bmvp9biel41q6skatlg8mk553o0a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.livestock"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:487460222471:android:0c3d39e275680764851ca2",
+        "android_client_info": {
+          "package_name": "com.example.live_stock_tracking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "487460222471-l4lrtd70c1o776elfg65tb5a05su8inl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDODj7bOUJo9RooA-FAGsJc78qmg2mgtw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "487460222471-l4lrtd70c1o776elfg65tb5a05su8inl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "487460222471-rd67bmvp9biel41q6skatlg8mk553o0a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.livestock"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
