@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:live_stock_tracking/page/forgetpassword.dart';
 import 'package:live_stock_tracking/page/registartion_page.dart';
 import 'package:live_stock_tracking/page/widgets/tetxfield.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -98,6 +99,9 @@ bool _validateField(String value, String fieldName) {
         password: password,
       );
 
+
+ SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', true);
   Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MyHomePage()),
