@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:live_stock_tracking/page/notifaction/ff.dart';
 import 'package:live_stock_tracking/page/notifaction/notifactions.dart';
 import 'package:live_stock_tracking/page/page.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -13,6 +15,12 @@ void main() async {
    await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+   await Permission.notification.isDenied.then((value) {
+        if (value) {
+          Permission.notification.request();
+        }
+      });
 
   // Check login status from SharedPreferences
   SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -13,7 +13,7 @@
     </intent>
   </queries>
     <application
-        android:label="live_stock_tracking"
+        android:label="livestock tracker"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

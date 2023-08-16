@@ -4,6 +4,8 @@ import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'notifactionModel.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -19,11 +21,108 @@ class _MyHomePageState extends State<MyHomePage> {
     Future<void> _refreshData() async {
     setState(() {});
   }
+  List sensorDataList = [];
+  final FlutterLocalNotificationsPlugin _localNotificationService =
+      FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    );
+    _localNotificationService.initialize(
+      initializationSettings,
+      onSelectNotification: (String? payload) async {
+        
+        // Handle notification taps when the app is in the foreground
+        // Implement your navigation logic here if needed
+      },
+    );
+
+    requestNotificationPermission();
+  }
+
+
+  Future<void> requestNotificationPermission() async {
+    final settings = await _localNotificationService.getNotificationAppLaunchDetails();
+    if (settings?.didNotificationLaunchApp ?? false) {
+      // The app was opened from a notification, handle as needed
+    }
+
+    var settingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    var settingsIOS = IOSInitializationSettings();
+    var initializationSettings = InitializationSettings(
+      android: settingsAndroid,
+      iOS: settingsIOS,
+    );
+    await _localNotificationService.initialize(
+      initializationSettings,
+      onSelectNotification: (String? payload) async {
+        // Handle notification taps when the app is in the foreground
+        // Implement your navigation logic here if needed
+      },
+    );
+
+    final bool? alreadyGranted = await _localNotificationService
+        .getNotificationAppLaunchDetails()
+        .then((details) => details?.didNotificationLaunchApp);
+    if (alreadyGranted != null && !alreadyGranted) {
+      await _localNotificationService
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+      await _localNotificationService
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(
+            AndroidNotificationChannel(
+              'channel_id',
+              'channel_name',
+             
+              importance: Importance.max,
+             
+            ),
+          );
+    }
+  }
+  // ...
+
+
+
+  Future<void> _showDataAddedNotification(String message) async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'channel_id',
+      'channel_name',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
+
+    await _localNotificationService.show(
+      0,
+      'New Data Added',
+      message,
+      platformChannelSpecifics,
+      payload: 'data_added_payload',
+    );
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 65, 20, 244),
 
          actions: [
           // Add a refresh icon button
@@ -32,14 +131,22 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: _refreshData,
           ),
         ],
-        title: const Text(
-          'Firebase Realtime Database',
-          style: TextStyle(
-            fontSize: 25,
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+        title: Row(
+          children: [
+            const Text(
+              'Live Stock Tracker Messages',
+              style: TextStyle(
+                fontSize: 25,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+              
+            ),
+            SizedBox(width: 5,),
+            Icon(Icons.notifications_active),
+          ],
         ),
+
       ),
       body: StreamBuilder(
         stream: reference.onValue,
@@ -56,11 +163,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
           dynamic data = snapshot.data!.snapshot.value;
 
-          print(data);
+          // print(data);
           if (data is List) {
             return ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {
+                _showDataAddedNotification('New data added');
                 // Create your list item widget using the data.
                 return ListTile(
                   title: Text(data[index]['your_field']),
@@ -68,19 +176,30 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             );
           } else if (data is Map) {
+
+             _showDataAddedNotification(data.toString());
             return Padding(
               padding: const EdgeInsets.all(12.0),
               child: Container(
                 width: double.infinity,
 
                 height: 200,
-                decoration: BoxDecoration(color: Colors.grey  ,
+                decoration: BoxDecoration(color: Color.fromARGB(255, 242, 2, 210)  ,
                 
                 borderRadius: BorderRadius.circular(12)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8, top: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(Icons.message,color: Colors.white,),
+                      ],
+                    ),
+                  ),
                   
               
                     SizedBox(
@@ -131,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                                'TLocation ' + data['Location'].toString(),
+                                'Location ' + data['Location'].toString(),
                                 style: TextStyle(
                                     color: Color.fromARGB(255, 2, 18, 236), fontWeight: FontWeight.w500)),
                           ),
