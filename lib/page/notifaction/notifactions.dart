@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     await _localNotificationService.show(
       0,
-      'New Data Added',
+      'New Messeage LiveStock Tracker',
       message,
       platformChannelSpecifics,
       payload: 'data_added_payload',
@@ -168,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
             return ListView.builder(
               itemCount: data.length,
               itemBuilder: (context, index) {
-                _showDataAddedNotification('New data added');
+              
                 // Create your list item widget using the data.
                 return ListTile(
                   title: Text(data[index]['your_field']),
