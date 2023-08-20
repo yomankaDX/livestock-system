@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:live_stock_tracking/page/page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'notifactionModel.dart';
@@ -130,13 +132,19 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.refresh),
             onPressed: _refreshData,
           ),
+
+          IconButton(onPressed: () async {
+             SharedPreferences prefs = await SharedPreferences.getInstance();
+             await prefs.clear();
+           Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+          }, icon: Icon(Icons.logout))
         ],
         title: Row(
           children: [
             const Text(
               'Live Stock Tracker Messages',
               style: TextStyle(
-                fontSize: 25,
+                fontSize: 18,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -183,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 width: double.infinity,
 
-                height: 200,
+                height: 240,
                 decoration: BoxDecoration(color: Color.fromARGB(255, 242, 2, 210)  ,
                 
                 borderRadius: BorderRadius.circular(12)),
